@@ -1,5 +1,9 @@
-import puppeteer, { Browser, GoToOptions, Page, PDFOptions, PuppeteerLaunchOptions } from 'puppeteer';
+import fs from 'fs';
+import path from 'path';
+import puppeteer, { Browser, Page, PDFOptions, PuppeteerLaunchOptions } from 'puppeteer';
 import logger from './logger';
+
+const pdfDir = path.resolve(__dirname, '..', '..', 'pdf');
 
 export default class Puppeteer {
   private browser!: Browser;
@@ -11,6 +15,16 @@ export default class Puppeteer {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       ...options,
     });
+    
+  try {
+    await fs.statSync(pdfDir);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      await fs.mkdirSync(pdfDir);
+    } else {
+      throw new Error(err);
+    }
+  }
   }
 
   public async newPage(): Promise<Page> {

@@ -1,5 +1,4 @@
 import fastify from "fastify";
-import fastifyIO from "fastify-socket.io";
 
 import Puppeteer from './lib/puppeteer';
 import logger from './lib/logger';
@@ -7,7 +6,6 @@ import logger from './lib/logger';
 import { name, version } from '../package.json';
 
 const server = fastify();
-server.register(fastifyIO);
 
 const puppeteer = new Puppeteer();
 
@@ -19,10 +17,12 @@ server.get('/', (req, reply) => {
   })
 });
 
-server.get('/test', async (req, reply) => {
+server.post('/pdf', async (req, reply) => {
   await puppeteer.newPage();
 
-  const pdf = await puppeteer.generatePdfFromHtml('<h1>Hello World !</h1>', null, { format: 'A4' });
+  const htmlBody = req.body['html'];
+
+  const pdf = await puppeteer.generatePdfFromHtml(htmlBody, 'test', { format: 'A4' });
 
   await puppeteer.close();
 
@@ -32,11 +32,6 @@ server.get('/test', async (req, reply) => {
     .send(pdf);
 });
 
-server.ready().then(() => {
-  server.io.on('connection', (socket) => {
-    // TODO: add logic take example on /test
-  });
-});
 
 server.listen({ port: 3000, host: '0.0.0.0' }, async (err, address) => {
   if (err) {
