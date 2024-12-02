@@ -1,10 +1,10 @@
-FROM node:20.18.0-alpine3.20 AS build
+FROM node:22.11.0-alpine3.20 AS build
 WORKDIR /build
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY . ./
 RUN npm ci && npm run build
 
-FROM node:20.18.0-slim AS prod
+FROM node:22.11.0-slim AS prod
 RUN apt-get update \
     && apt-get install -y wget gnupg \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
