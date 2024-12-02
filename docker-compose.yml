@@ -1,16 +1,17 @@
 services:
   app:
+    container_name: pdf_generator
     build:
       context: .
     ports:
-      - 3000:3000
+      - 30028:3000
     working_dir: /app
     volumes:
       - ./:/app
     command: npm run dev
     networks:
-      - dmpopidor_network
+      - dmpopidor_dmpopidor_network
 
 networks:
-  dmpopidor_network:
-    driver: "bridge"
+  dmpopidor_dmpopidor_network:
+    external: true
